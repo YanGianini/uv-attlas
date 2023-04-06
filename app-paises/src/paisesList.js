@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native"
-import { SearchBar } from '@rneui/themed';
+import { ThemeProvider, SearchBar, ListItem } from '@rneui/themed';
 
 export default PaisesList = ({ navigation }) => {
   const [paises, setPaises] = useState([]);
@@ -52,23 +52,30 @@ export default PaisesList = ({ navigation }) => {
   }, [search])
 
   return (
-    <View>
-      <Text>Lista de paises</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
-        <Text>Home</Text>
-      </TouchableOpacity>
-      <SearchBar
-        placeholder="Pesquise um país..."
-        onChangeText={updateSearch}
-        value={search}
-      />
-      <ScrollView>
-        {paisesFiltrados.map((pais, index) => (
-          <TouchableOpacity key={index} onPress={() => navigation.navigate('pais detail', { pais: pais })}>
-            <Text> {pais.nome.abreviado}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
+    <ThemeProvider>
+      <View>
+        <Text>Lista de paises</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Text>Home</Text>
+        </TouchableOpacity>
+        <SearchBar
+          placeholder="Pesquise um país..."
+          onChangeText={updateSearch}
+          value={search}
+          lightTheme={true}
+        />
+        <ScrollView>
+          {paisesFiltrados.map((pais, index) => (
+            <TouchableOpacity key={index} onPress={() => navigation.navigate('País', { pais: pais })}>
+              <ListItem>
+                <ListItem.Content>
+                  <ListItem.Title>{pais.nome.abreviado}</ListItem.Title>
+                </ListItem.Content>
+              </ListItem>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </ThemeProvider>
   )
 }

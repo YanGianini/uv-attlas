@@ -13,9 +13,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="HomePage" options={{headerShown: false}} component={homePage} />
-        <Stack.Screen name="Paises list" component={paisesList} />
-        <Stack.Screen name="pais detail" component={paisDetail} />
+        <Stack.Screen name="Home" options={{headerShown: false}} component={homePage} />
+        <Stack.Screen name="Lista de Países" component={paisesList} />
+        <Stack.Screen name="País" component={paisDetail} />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
