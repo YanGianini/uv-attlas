@@ -4,7 +4,7 @@ export default HomePage = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <Text>Paises</Text>
+            <Text>Attlas</Text>
             <TouchableOpacity onPress={() => navigation.navigate('Paises list')}>
                 <Text> Lista de Paises</Text>
             </TouchableOpacity>
