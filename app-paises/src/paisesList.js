@@ -55,7 +55,7 @@ export default PaisesList = ({ navigation }) => {
     <ThemeProvider>
       <View>
         <Text>Lista de paises</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Text>Home</Text>
         </TouchableOpacity>
         <SearchBar
@@ -66,7 +66,7 @@ export default PaisesList = ({ navigation }) => {
         />
         <ScrollView>
           {paisesFiltrados.map((pais, index) => (
-            <TouchableOpacity key={index} onPress={() => navigation.navigate('pais detail', { pais: pais })}>
+            <TouchableOpacity key={index} onPress={() => navigation.navigate('País', { pais: pais })}>
               <ListItem>
                 <ListItem.Content>
                   <ListItem.Title>{pais.nome.abreviado}</ListItem.Title>

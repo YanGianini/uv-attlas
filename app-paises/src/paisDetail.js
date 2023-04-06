@@ -7,8 +7,8 @@ export default PaisDetail = ({ route, navigation }) => {
 
     return (
         <View>
-            <TouchableOpacity onPress={() => navigation.navigate('HomePage')}>
-                <Text> Home</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+                <Text>Home</Text>
             </TouchableOpacity>
             <ScrollView>
                 <Text>{pais.nome.abreviado}</Text>
