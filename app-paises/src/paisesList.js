@@ -54,9 +54,7 @@ export default PaisesList = ({ navigation }) => {
   return (
     <ThemeProvider>
       <View>
-        <Text>Lista de paises</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text>Home</Text>
         </TouchableOpacity>
         <SearchBar
           placeholder="Pesquise um país..."
