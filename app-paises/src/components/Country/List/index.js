@@ -39,7 +39,7 @@ export default CountryList = ({ navigation }) => {
 
   useEffect(() => {
     if (search) {
-      const newCountryListFiltered = countryes.filter(
+      const newCountryListFiltered = countryList.filter(
         function (country) {
           const countryName = country?.translations?.pt
             ? country?.translations?.pt?.toUpperCase()
@@ -48,6 +48,8 @@ export default CountryList = ({ navigation }) => {
         }
       )
       setCountryListFiltered(newCountryListFiltered)
+    } else {
+      setCountryListFiltered(countryList)
     }
   }, [search])
 
@@ -81,12 +83,11 @@ export default CountryList = ({ navigation }) => {
               <ListItem bottomDivider>
                 <Avatar
                   rounded
-                  source={{ uri: country.flags.svg }}
+                  source={country.flags.png ? { uri: country.flags.png } : {}}
                 />
                 <ListItem.Content>
                   <ListItem.Title>{country.translations.pt}</ListItem.Title>
                   <ListItem.Subtitle>{country.nativeName}</ListItem.Subtitle>
-                  <ListItem.Subtitle>{country.flags.svg}</ListItem.Subtitle>
                 </ListItem.Content>
               </ListItem>
             </TouchableOpacity>
