@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
 import { Card, Tab, Text, TabView } from '@rneui/themed';
 import styles from './styles'
+import MapView, { Marker } from 'react-native-maps';
 
 export default CountryDetail = ({ route, navigation }) => {
 
     const { country } = route.params
     const [countryData, setCountryData] = React.useState(null);
-    
+    const [location, setLocation] = React.useState([0, 0]);
     const [index, setIndex] = React.useState(0);
-
+    
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetch('https://servicodados.ibge.gov.br/api/v1/paises/' + country.alpha2Code)
@@ -16,7 +17,9 @@ export default CountryDetail = ({ route, navigation }) => {
             setCountryData(data[0])
         }
         fetchData().catch(console.error);
+        setLocation(country.latlng)
     }, [country])
+
 
     return countryData ? (
         <>
@@ -60,7 +63,43 @@ export default CountryDetail = ({ route, navigation }) => {
                     </Card>
                 </TabView.Item>
                 <TabView.Item style={{ backgroundColor: 'white', width: '100%' }}>
-                    <Text h1>Mapa</Text>
+                    
+                    <MapView loadingEnabled={true} style={{ backgroundColor: 'white', width: '100%', height: '100%' }}
+                        region={
+                        !location ?
+                            {
+                            latitude: 0,
+                            longitude: 0,
+                            latitudeDelta: 0,
+                            longitudeDelta: 1000,
+                            } :
+                            {
+                            latitude: location[0],
+                            longitude: location[1],
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005,
+                            }
+                        }
+                    >
+                        <Marker coordinate={
+                        !location ?
+                            {
+                            latitude: 0,
+                            longitude: 0,
+                            latitudeDelta: 0,
+                            longitudeDelta: 1000,
+                            } :
+                            {
+                            latitude: location[0],
+                            longitude: location[1],
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005,
+                            }
+                        }
+                        title="Pais"
+                        description="Pais X"
+                        />
+                    </MapView>
                 </TabView.Item>
             </TabView>
         </>
