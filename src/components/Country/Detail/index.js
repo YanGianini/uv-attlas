@@ -96,8 +96,8 @@ export default CountryDetail = ({ route, navigation }) => {
                             longitudeDelta: 0.005,
                             }
                         }
-                        title="Pais"
-                        description="Pais X"
+                        title={countryData.nome.abreviado}
+                        description={countryData.governo.capital.nome}
                         />
                     </MapView>
                 </TabView.Item>
