@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { View, TouchableOpacity, ScrollView } from "react-native"
-import { ThemeProvider, SearchBar, ListItem, Avatar } from '@rneui/themed';
+import { memo, useState, useEffect, useRef } from "react";
+import { SafeAreaView, TouchableOpacity, View, FlatList } from "react-native"
+import { ThemeProvider, SearchBar, ListItem, Text, Avatar } from '@rneui/themed';
 import { Header } from '@rneui/themed';
 
 export default CountryList = ({ navigation }) => {
@@ -53,9 +53,34 @@ export default CountryList = ({ navigation }) => {
     }
   }, [search])
 
-  return (
+  function itemEq(prevItem, nextItem) {
+    return prevItem.item.alpha3Code === nextItem.item.alpha3Code;
+  }
+
+  const Country = ({ item }) => {
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('País', { country: item })}>
+        <View>
+          <ListItem bottomDivider>
+            <Avatar
+              rounded
+              source={item.flags.png ? { uri: item.flags.png } : {}}
+            />
+            <ListItem.Content>
+              <ListItem.Title>{item.translations.pt}</ListItem.Title>
+              <ListItem.Subtitle>{item.nativeName}</ListItem.Subtitle>
+            </ListItem.Content>
+          </ListItem>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const MemoizedCountry = memo(Country, itemEq);
+
+  return countryListFiltered ? (
     <ThemeProvider>
-      <View>
+      <SafeAreaView>
         <Header
           backgroundImageStyle={{}}
           barStyle="default"
@@ -69,31 +94,18 @@ export default CountryList = ({ navigation }) => {
           placement="center"
           statusBarProps={{}}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-        </TouchableOpacity>
         <SearchBar
           placeholder="Pesquise um país..."
           onChangeText={updateSearch}
           value={search}
           lightTheme={true}
         />
-        <ScrollView>
-          {countryListFiltered.map((country, index) => (
-            <TouchableOpacity key={index} onPress={() => navigation.navigate('País', { country: country })}>
-              <ListItem bottomDivider>
-                <Avatar
-                  rounded
-                  source={country.flags.png ? { uri: country.flags.png } : {}}
-                />
-                <ListItem.Content>
-                  <ListItem.Title>{country.translations.pt}</ListItem.Title>
-                  <ListItem.Subtitle>{country.nativeName}</ListItem.Subtitle>
-                </ListItem.Content>
-              </ListItem>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+        <FlatList
+          data={countryListFiltered}
+          renderItem={({ item }) => <MemoizedCountry item={item} />}
+        >
+        </FlatList>
+      </SafeAreaView>
     </ThemeProvider>
-  )
+  ) : null
 }

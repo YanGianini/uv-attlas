@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
+import MapView, { Marker } from 'react-native-maps';
+import { ActivityIndicator } from 'react-native';
 import { Card, Tab, Text, TabView } from '@rneui/themed';
 import styles from './styles'
-import MapView, { Marker } from 'react-native-maps';
 
 export default CountryDetail = ({ route, navigation }) => {
 
@@ -9,7 +10,7 @@ export default CountryDetail = ({ route, navigation }) => {
     const [countryData, setCountryData] = React.useState(null);
     const [location, setLocation] = React.useState([0, 0]);
     const [index, setIndex] = React.useState(0);
-    
+
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetch('https://servicodados.ibge.gov.br/api/v1/paises/' + country.alpha2Code)
@@ -21,7 +22,7 @@ export default CountryDetail = ({ route, navigation }) => {
     }, [country])
 
 
-    return countryData ? (
+    return (
         <>
             <Tab
                 value={index}
@@ -47,61 +48,66 @@ export default CountryDetail = ({ route, navigation }) => {
             <TabView value={index} onChange={setIndex} animationType="spring">
                 <TabView.Item style={{ backgroundColor: 'gray', width: '100%' }}>
                     <Card>
-                        <Text style={styles.countryName}>{countryData.nome.abreviado}</Text>
-                        <Text style={styles.fontBolder}>Continente:</Text>
-                        <Text style={styles.fontInfo}>{countryData.localizacao.regiao.nome}</Text>
-                        <Text style={styles.fontBolder}>Capital:</Text>
-                        <Text style={styles.fontInfo}>{countryData.governo.capital.nome}</Text>
-                        <Text style={styles.fontBolder}>Area:</Text>
-                        <Text style={styles.fontInfo}>{countryData.area.total} {countryData.area.unidade['símbolo']}</Text>
-                        <Text style={styles.fontBolder}>Lingua:</Text>
-                        <Text style={styles.fontInfo}>{countryData.linguas[0].nome}</Text>
-                        <Text style={styles.fontBolder}>Moeda:</Text>
-                        <Text style={styles.fontInfo}>{countryData['unidades-monetarias'][0].id['ISO-4217-ALPHA']} - {countryData['unidades-monetarias'][0].nome}</Text>
-                        <Text style={styles.fontBolder}>Historia geral:</Text>
-                        <Text style={styles.fontInfo}>{countryData.historico}</Text>
+                        {countryData ? (
+                            <>
+                                <Text style={styles.countryName}>{countryData.nome.abreviado}</Text>
+                                <Text style={styles.fontBolder}>Continente:</Text>
+                                <Text style={styles.fontInfo}>{countryData.localizacao.regiao.nome}</Text>
+                                <Text style={styles.fontBolder}>Capital:</Text>
+                                <Text style={styles.fontInfo}>{countryData.governo.capital.nome}</Text>
+                                <Text style={styles.fontBolder}>Area:</Text>
+                                <Text style={styles.fontInfo}>{countryData.area.total} {countryData.area.unidade['símbolo']}</Text>
+                                <Text style={styles.fontBolder}>Lingua:</Text>
+                                <Text style={styles.fontInfo}>{countryData.linguas[0].nome}</Text>
+                                <Text style={styles.fontBolder}>Moeda:</Text>
+                                <Text style={styles.fontInfo}>{countryData['unidades-monetarias'][0].id['ISO-4217-ALPHA']} - {countryData['unidades-monetarias'][0].nome}</Text>
+                                <Text style={styles.fontBolder}>Historia geral:</Text>
+                                <Text style={styles.fontInfo}>{countryData.historico}</Text>
+                            </>
+                        ) : <ActivityIndicator />}
                     </Card>
                 </TabView.Item>
                 <TabView.Item style={{ backgroundColor: 'white', width: '100%' }}>
-                    
-                    <MapView loadingEnabled={true} style={{ backgroundColor: 'white', width: '100%', height: '100%' }}
-                        region={
-                        !location ?
-                            {
-                            latitude: 0,
-                            longitude: 0,
-                            latitudeDelta: 0,
-                            longitudeDelta: 1000,
-                            } :
-                            {
-                            latitude: location[0],
-                            longitude: location[1],
-                            latitudeDelta: 0.005,
-                            longitudeDelta: 0.005,
+                    {countryData ? (
+                        <MapView loadingEnabled={true} style={{ backgroundColor: 'white', width: '100%', height: '100%' }}
+                            region={
+                                !location ?
+                                    {
+                                        latitude: 0,
+                                        longitude: 0,
+                                        latitudeDelta: 0,
+                                        longitudeDelta: 1000,
+                                    } :
+                                    {
+                                        latitude: location[0],
+                                        longitude: location[1],
+                                        latitudeDelta: 0.005,
+                                        longitudeDelta: 0.005,
+                                    }
                             }
-                        }
-                    >
-                        <Marker coordinate={
-                        !location ?
-                            {
-                            latitude: 0,
-                            longitude: 0,
-                            latitudeDelta: 0,
-                            longitudeDelta: 1000,
-                            } :
-                            {
-                            latitude: location[0],
-                            longitude: location[1],
-                            latitudeDelta: 0.005,
-                            longitudeDelta: 0.005,
+                        >
+                            <Marker coordinate={
+                                !location ?
+                                    {
+                                        latitude: 0,
+                                        longitude: 0,
+                                        latitudeDelta: 0,
+                                        longitudeDelta: 1000,
+                                    } :
+                                    {
+                                        latitude: location[0],
+                                        longitude: location[1],
+                                        latitudeDelta: 0.005,
+                                        longitudeDelta: 0.005,
+                                    }
                             }
-                        }
-                        title={countryData.nome.abreviado}
-                        description={countryData.governo.capital.nome}
-                        />
-                    </MapView>
+                                title={countryData.nome.abreviado}
+                                description={countryData.governo.capital.nome}
+                            />
+                        </MapView>
+                    ) : <ActivityIndicator />}
                 </TabView.Item>
             </TabView>
         </>
-    ) : null
+    )
 }
