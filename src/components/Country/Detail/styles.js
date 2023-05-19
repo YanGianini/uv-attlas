@@ -5,14 +5,13 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 22,
         textAlign: 'center',
-        backgroundColor: '#0000FF',
+        backgroundColor: '#2089DC',
         color: '#FFF',
     },
     fontBolder: {
         fontWeight: 'bold',
     },
     fontInfo: {
-        marginLeft: 10,
         textAlign: 'justify',
     },
 });

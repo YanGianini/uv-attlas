@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { Card, Tab, Text, TabView } from '@rneui/themed';
 import styles from './styles'
 
@@ -47,25 +47,27 @@ export default CountryDetail = ({ route, navigation }) => {
 
             <TabView value={index} onChange={setIndex} animationType="spring">
                 <TabView.Item style={{ backgroundColor: 'gray', width: '100%' }}>
-                    <Card>
-                        {countryData ? (
-                            <>
-                                <Text style={styles.countryName}>{countryData.nome.abreviado}</Text>
-                                <Text style={styles.fontBolder}>Continente:</Text>
-                                <Text style={styles.fontInfo}>{countryData.localizacao.regiao.nome}</Text>
-                                <Text style={styles.fontBolder}>Capital:</Text>
-                                <Text style={styles.fontInfo}>{countryData.governo.capital.nome}</Text>
-                                <Text style={styles.fontBolder}>Area:</Text>
-                                <Text style={styles.fontInfo}>{countryData.area.total} {countryData.area.unidade['símbolo']}</Text>
-                                <Text style={styles.fontBolder}>Lingua:</Text>
-                                <Text style={styles.fontInfo}>{countryData.linguas[0].nome}</Text>
-                                <Text style={styles.fontBolder}>Moeda:</Text>
-                                <Text style={styles.fontInfo}>{countryData['unidades-monetarias'][0].id['ISO-4217-ALPHA']} - {countryData['unidades-monetarias'][0].nome}</Text>
-                                <Text style={styles.fontBolder}>Historia geral:</Text>
-                                <Text style={styles.fontInfo}>{countryData.historico}</Text>
-                            </>
-                        ) : <ActivityIndicator />}
-                    </Card>
+                    <ScrollView>
+                        <Card>
+                            {countryData ? (
+                                <>
+                                    <Text style={styles.countryName}>{countryData.nome.abreviado}</Text>
+                                    <Text style={styles.fontBolder}>Continente:</Text>
+                                    <Text style={styles.fontInfo}>{countryData.localizacao.regiao.nome}</Text>
+                                    <Text style={styles.fontBolder}>Capital:</Text>
+                                    <Text style={styles.fontInfo}>{countryData.governo.capital.nome}</Text>
+                                    <Text style={styles.fontBolder}>Área:</Text>
+                                    <Text style={styles.fontInfo}>{countryData.area.total} {countryData.area.unidade['símbolo']}</Text>
+                                    <Text style={styles.fontBolder}>Idioma:</Text>
+                                    <Text style={styles.fontInfo}>{countryData.linguas[0].nome}</Text>
+                                    <Text style={styles.fontBolder}>Moeda:</Text>
+                                    <Text style={styles.fontInfo}>{countryData['unidades-monetarias'][0].id['ISO-4217-ALPHA']} - {countryData['unidades-monetarias'][0].nome}</Text>
+                                    <Text style={styles.fontBolder}>História Geral:</Text>
+                                    <Text style={styles.fontInfo}>{countryData.historico}</Text>
+                                </>
+                            ) : <ActivityIndicator />}
+                        </Card>
+                    </ScrollView>
                 </TabView.Item>
                 <TabView.Item style={{ backgroundColor: 'white', width: '100%' }}>
                     {countryData ? (
@@ -82,7 +84,7 @@ export default CountryDetail = ({ route, navigation }) => {
                                         latitude: location[0],
                                         longitude: location[1],
                                         latitudeDelta: 0.005,
-                                        longitudeDelta: 0.005,
+                                        longitudeDelta: 750,
                                     }
                             }
                         >
