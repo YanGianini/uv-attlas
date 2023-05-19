@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "app-paises",
-    "slug": "app-paises",
+    "name": "Attlas",
+    "slug": "Attlas",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/logo-no-background.png",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/logo-no-background.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo-no-background.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     },
