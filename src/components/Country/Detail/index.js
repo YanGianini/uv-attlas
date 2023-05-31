@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { ActivityIndicator, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView, View, Image } from 'react-native';
 import { Card, Tab, Text, TabView } from '@rneui/themed';
 import styles from './styles'
 
@@ -50,8 +50,11 @@ export default CountryDetail = ({ route, navigation }) => {
                     <ScrollView>
                         <Card>
                             {countryData ? (
-                                <>
-                                    <Text style={styles.countryName}>{countryData.nome.abreviado}</Text>
+                                <>  
+                                    <View style={styles.container}>
+                                        <Image style={styles.stretch} source={country.flags.png ? { uri: country.flags.png } : {}}/>
+                                    </View>
+                                    <Text style={styles.countryName}>{country.translations.pt}</Text>
                                     <Text style={styles.fontBolder}>Continente:</Text>
                                     <Text style={styles.fontInfo}>{countryData.localizacao.regiao.nome}</Text>
                                     <Text style={styles.fontBolder}>Capital:</Text>
