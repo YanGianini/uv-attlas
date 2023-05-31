@@ -14,6 +14,15 @@ const styles = StyleSheet.create({
     fontInfo: {
         textAlign: 'justify',
     },
+    container: {
+        paddingTop: 1,
+        paddingBottom: 7,
+      },
+      stretch: {
+        width: 350,
+        height: 100,
+        resizeMode: 'stretch',
+      },
 });
 
 export default styles;
