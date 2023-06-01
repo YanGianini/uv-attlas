@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
-import { ActivityIndicator, ScrollView, View, Image } from 'react-native';
-import { Card, Tab, Text, TabView } from '@rneui/themed';
-import styles from './styles'
+import { ScrollView } from 'react-native';
+import { Tab, TabView } from '@rneui/themed';
+import CountryCard from './CountryCard';
 
 export default CountryDetail = ({ route, navigation }) => {
 
@@ -17,7 +17,7 @@ export default CountryDetail = ({ route, navigation }) => {
             const data = await response.json()
             setCountryData(data[0])
         }
-        fetchData().catch(console.error);
+        fetchData().catch(console.log)
         setLocation(country.latlng)
     }, [country])
 
@@ -47,70 +47,46 @@ export default CountryDetail = ({ route, navigation }) => {
 
             <TabView value={index} onChange={setIndex} animationType="spring">
                 <TabView.Item style={{ backgroundColor: 'gray', width: '100%' }}>
-                    <ScrollView>
-                        <Card>
-                            {countryData ? (
-                                <>  
-                                    <View style={styles.container}>
-                                        <Image style={styles.stretch} source={country.flags.png ? { uri: country.flags.png } : {}}/>
-                                    </View>
-                                    <Text style={styles.countryName}>{country.translations.pt}</Text>
-                                    <Text style={styles.fontBolder}>Continente:</Text>
-                                    <Text style={styles.fontInfo}>{countryData.localizacao.regiao.nome}</Text>
-                                    <Text style={styles.fontBolder}>Capital:</Text>
-                                    <Text style={styles.fontInfo}>{countryData.governo.capital.nome}</Text>
-                                    <Text style={styles.fontBolder}>Área:</Text>
-                                    <Text style={styles.fontInfo}>{countryData.area.total} {countryData.area.unidade['símbolo']}</Text>
-                                    <Text style={styles.fontBolder}>Idioma:</Text>
-                                    <Text style={styles.fontInfo}>{countryData.linguas[0].nome}</Text>
-                                    <Text style={styles.fontBolder}>Moeda:</Text>
-                                    <Text style={styles.fontInfo}>{countryData['unidades-monetarias'][0].id['ISO-4217-ALPHA']} - {countryData['unidades-monetarias'][0].nome}</Text>
-                                    <Text style={styles.fontBolder}>História Geral:</Text>
-                                    <Text style={styles.fontInfo}>{countryData.historico}</Text>
-                                </>
-                            ) : <ActivityIndicator />}
-                        </Card>
+                    <ScrollView style={{marginBottom: 15}}>
+                        <CountryCard country={country} countryIBGE={countryData} />
                     </ScrollView>
                 </TabView.Item>
                 <TabView.Item style={{ backgroundColor: 'white', width: '100%' }}>
-                    {countryData ? (
-                        <MapView loadingEnabled={true} style={{ backgroundColor: 'white', width: '100%', height: '100%' }}
-                            region={
-                                !location ?
-                                    {
-                                        latitude: 0,
-                                        longitude: 0,
-                                        latitudeDelta: 0,
-                                        longitudeDelta: 1000,
-                                    } :
-                                    {
-                                        latitude: location[0],
-                                        longitude: location[1],
-                                        latitudeDelta: 0.005,
-                                        longitudeDelta: 750,
-                                    }
-                            }
-                        >
-                            <Marker coordinate={
-                                !location ?
-                                    {
-                                        latitude: 0,
-                                        longitude: 0,
-                                        latitudeDelta: 0,
-                                        longitudeDelta: 1000,
-                                    } :
-                                    {
-                                        latitude: location[0],
-                                        longitude: location[1],
-                                        latitudeDelta: 0.005,
-                                        longitudeDelta: 0.005,
-                                    }
-                            }
-                                title={countryData.nome.abreviado}
-                                description={countryData.governo.capital.nome}
-                            />
-                        </MapView>
-                    ) : <ActivityIndicator />}
+                    <MapView loadingEnabled={true} style={{ backgroundColor: 'white', width: '100%', height: '100%' }}
+                        region={
+                            !location ?
+                                {
+                                    latitude: 0,
+                                    longitude: 0,
+                                    latitudeDelta: 0,
+                                    longitudeDelta: 1000,
+                                } :
+                                {
+                                    latitude: location[0],
+                                    longitude: location[1],
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 750,
+                                }
+                        }
+                    >
+                        <Marker coordinate={
+                            !location ?
+                                {
+                                    latitude: 0,
+                                    longitude: 0,
+                                    latitudeDelta: 0,
+                                    longitudeDelta: 1000,
+                                } :
+                                {
+                                    latitude: location[0],
+                                    longitude: location[1],
+                                    latitudeDelta: 0.005,
+                                    longitudeDelta: 0.005,
+                                }
+                        }
+                            title={country.translations.br}
+                        />
+                    </MapView>
                 </TabView.Item>
             </TabView>
         </>

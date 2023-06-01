@@ -1,7 +1,9 @@
-import { memo, useState, useEffect, useRef } from "react";
+import { memo, useState, useEffect } from "react";
 import { SafeAreaView, TouchableOpacity, View, FlatList } from "react-native"
 import { ThemeProvider, SearchBar, ListItem, Text, Avatar } from '@rneui/themed';
-import { Header } from '@rneui/themed';
+import { Header, Icon } from '@rneui/themed';
+import * as SecureStore from 'expo-secure-store';
+
 
 export default CountryList = ({ navigation }) => {
   const [countryList, setCountryList] = useState([]);
@@ -37,6 +39,8 @@ export default CountryList = ({ navigation }) => {
     }
   };
 
+
+
   useEffect(() => {
     if (search) {
       const newCountryListFiltered = countryList.filter(
@@ -58,8 +62,52 @@ export default CountryList = ({ navigation }) => {
   }
 
   const Country = ({ item }) => {
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    useEffect(() => {
+      checkFavoriteStatus();
+    }, []);
+
+    const checkFavoriteStatus = async () => {
+      try {
+        const favorites = await SecureStore.getItemAsync('favorites')
+        const favoriteCountries = JSON.parse(favorites);
+        if (favoriteCountries && favoriteCountries.includes(item.alpha3Code)) {
+          setIsFavorite(true);
+        } else {
+          setIsFavorite(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const toggleFavorite = async () => {
+      try {
+        let updatedFavorites = [];
+        const favorites = await SecureStore.getItemAsync('favorites')
+        const favoriteCountries = JSON.parse(favorites);
+        if (favoriteCountries) {
+          if (favoriteCountries.includes(item.alpha3Code)) {
+            updatedFavorites = favoriteCountries.filter((alpha3Code) => alpha3Code !== item.alpha3Code);
+            setIsFavorite(false);
+          } else {
+            updatedFavorites = [...favoriteCountries, item.alpha3Code];
+            setIsFavorite(true);
+          }
+        } else {
+          updatedFavorites = [item.alpha3Code];
+          setIsFavorite(true);
+        }
+
+        await SecureStore.setItemAsync('favorites', JSON.stringify(updatedFavorites));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     return (
-      <TouchableOpacity onPress={() => navigation.navigate('País', { country: item })}>
+      <TouchableOpacity onPress={() => navigation.navigate('País', { name: item.translations.br, country: item })}>
         <View>
           <ListItem bottomDivider>
             <Avatar
@@ -69,7 +117,20 @@ export default CountryList = ({ navigation }) => {
             <ListItem.Content>
               <ListItem.Title>{item.translations.pt}</ListItem.Title>
               <ListItem.Subtitle>{item.nativeName}</ListItem.Subtitle>
+              
             </ListItem.Content>
+            <TouchableOpacity onPress={toggleFavorite}>
+                <Text>{isFavorite ? (
+                  <Icon
+                    name='star'
+                    type='ionicon'
+                    color='#2089DC'
+                  />) : (<Icon
+                    name='star-outline'
+                    type='ionicon'
+                    color='#2089DC'
+                  />)}</Text>
+              </TouchableOpacity>
           </ListItem>
         </View>
       </TouchableOpacity>
@@ -77,6 +138,16 @@ export default CountryList = ({ navigation }) => {
   };
 
   const MemoizedCountry = memo(Country, itemEq);
+
+  const Favorites = () => {
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('Favoritos', {countryList: countryList })}>
+        <View>
+          <Text style={{color: '#FFF'}}>Favoritos</Text>
+        </View>      
+      </TouchableOpacity>
+    );
+  };
 
   return countryListFiltered ? (
     <ThemeProvider>
@@ -93,6 +164,7 @@ export default CountryList = ({ navigation }) => {
           linearGradientProps={{}}
           placement="center"
           statusBarProps={{}}
+          rightComponent={<Favorites />}
         />
         <SearchBar
           placeholder="Pesquise um país..."
