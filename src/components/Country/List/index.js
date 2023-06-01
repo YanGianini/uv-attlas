@@ -2,6 +2,7 @@ import { memo, useState, useEffect, useRef } from "react";
 import { SafeAreaView, TouchableOpacity, View, FlatList } from "react-native"
 import { ThemeProvider, SearchBar, ListItem, Text, Avatar } from '@rneui/themed';
 import { Header } from '@rneui/themed';
+import * as SecureStore from 'expo-secure-store';
 
 export default CountryList = ({ navigation }) => {
   const [countryList, setCountryList] = useState([]);
@@ -58,8 +59,55 @@ export default CountryList = ({ navigation }) => {
   }
 
   const Country = ({ item }) => {
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    useEffect(() => {
+      checkFavoriteStatus();
+    }, []);
+
+    const checkFavoriteStatus = async () => {
+      try {
+        const favorites = await SecureStore.getItemAsync('favorites')
+        const parsedFavorites = JSON.parse(favorites);
+
+        if (parsedFavorites && parsedFavorites.includes(item.alpha3Code)) {
+          setIsFavorite(true);
+        } else {
+          setIsFavorite(false);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    const toggleFavorite = async () => {
+      try {
+        const favorites = await SecureStore.getItemAsync('favorites');
+        const parsedFavorites = JSON.parse(favorites);
+
+        let updatedFavorites = [];
+
+        if (parsedFavorites) {
+          if (parsedFavorites.includes(item.alpha3Code)) {
+            updatedFavorites = parsedFavorites.filter((alpha3Code) => alpha3Code !== item.alpha3Code);
+            setIsFavorite(false);
+          } else {
+            updatedFavorites = [...parsedFavorites, item.alpha3Code];
+            setIsFavorite(true);
+          }
+        } else {
+          updatedFavorites = [item.alpha3Code];
+          setIsFavorite(true);
+        }
+
+        await SecureStore.setItemAsync('favorites', JSON.stringify(updatedFavorites));
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     return (
-      <TouchableOpacity onPress={() => navigation.navigate('País', { country: item })}>
+      <TouchableOpacity onPress={() => navigation.navigate('País', { name: item.translations.br, country: item })}>
         <View>
           <ListItem bottomDivider>
             <Avatar
@@ -69,6 +117,9 @@ export default CountryList = ({ navigation }) => {
             <ListItem.Content>
               <ListItem.Title>{item.translations.pt}</ListItem.Title>
               <ListItem.Subtitle>{item.nativeName}</ListItem.Subtitle>
+              <TouchableOpacity onPress={toggleFavorite}>
+                <Text>{isFavorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}</Text>
+              </TouchableOpacity>
             </ListItem.Content>
           </ListItem>
         </View>

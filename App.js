@@ -11,9 +11,17 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{
+          headerStyle: {
+            backgroundColor: '#2089DC',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}>
         <Stack.Screen name="Lista de Países" options={{headerShown: false}} component={CountryList} />
-        <Stack.Screen name="País" component={CountryDetail} />
+        <Stack.Screen name="País" options={({ route }) => ({ title: route.params.name })} component={CountryDetail} />
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
