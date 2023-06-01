@@ -1,16 +1,19 @@
-import { memo, useState, useEffect, useRef } from "react";
+import { memo, useState, useEffect } from "react";
 import { SafeAreaView, TouchableOpacity, View, FlatList } from "react-native"
 import { ThemeProvider, SearchBar, ListItem, Text, Avatar } from '@rneui/themed';
 import { Header } from '@rneui/themed';
 import * as SecureStore from 'expo-secure-store';
 
+
 export default CountryList = ({ navigation }) => {
   const [countryList, setCountryList] = useState([]);
   const [countryListFiltered, setCountryListFiltered] = useState([]);
+  const [favoriteCountries, setFavoriteCountries] = useState([])
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchCountryList();
+    getFavoriteCountries();
   }, []);
 
   const updateSearch = (search) => {
@@ -38,6 +41,12 @@ export default CountryList = ({ navigation }) => {
     }
   };
 
+  const getFavoriteCountries = async () => {
+    const favorites = await SecureStore.getItemAsync('favorites')
+    const parsedFavorites = JSON.parse(favorites);
+    setFavoriteCountries(parsedFavorites)
+  }
+
   useEffect(() => {
     if (search) {
       const newCountryListFiltered = countryList.filter(
@@ -63,14 +72,11 @@ export default CountryList = ({ navigation }) => {
 
     useEffect(() => {
       checkFavoriteStatus();
-    }, []);
+    }, [favoriteCountries]);
 
     const checkFavoriteStatus = async () => {
       try {
-        const favorites = await SecureStore.getItemAsync('favorites')
-        const parsedFavorites = JSON.parse(favorites);
-
-        if (parsedFavorites && parsedFavorites.includes(item.alpha3Code)) {
+        if (favoriteCountries && favoriteCountries.includes(item.alpha3Code)) {
           setIsFavorite(true);
         } else {
           setIsFavorite(false);
@@ -82,17 +88,14 @@ export default CountryList = ({ navigation }) => {
 
     const toggleFavorite = async () => {
       try {
-        const favorites = await SecureStore.getItemAsync('favorites');
-        const parsedFavorites = JSON.parse(favorites);
-
         let updatedFavorites = [];
 
-        if (parsedFavorites) {
-          if (parsedFavorites.includes(item.alpha3Code)) {
-            updatedFavorites = parsedFavorites.filter((alpha3Code) => alpha3Code !== item.alpha3Code);
+        if (favoriteCountries) {
+          if (favoriteCountries.includes(item.alpha3Code)) {
+            updatedFavorites = favoriteCountries.filter((alpha3Code) => alpha3Code !== item.alpha3Code);
             setIsFavorite(false);
           } else {
-            updatedFavorites = [...parsedFavorites, item.alpha3Code];
+            updatedFavorites = [...favoriteCountries, item.alpha3Code];
             setIsFavorite(true);
           }
         } else {
@@ -101,6 +104,7 @@ export default CountryList = ({ navigation }) => {
         }
 
         await SecureStore.setItemAsync('favorites', JSON.stringify(updatedFavorites));
+        setFavoriteCountries(updatedFavorites)
       } catch (error) {
         console.log(error);
       }
@@ -129,6 +133,18 @@ export default CountryList = ({ navigation }) => {
 
   const MemoizedCountry = memo(Country, itemEq);
 
+  const Favorites = () => {
+    const filteredFavoriteCountries = countryList.filter(country => favoriteCountries.includes(country.alpha3Code))
+
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('Favoritos', {countryList: filteredFavoriteCountries })}>
+        <View>
+          <Text style={{color: '#FFF'}}>Favoritos</Text>
+        </View>      
+      </TouchableOpacity>
+    );
+  };
+
   return countryListFiltered ? (
     <ThemeProvider>
       <SafeAreaView>
@@ -144,6 +160,7 @@ export default CountryList = ({ navigation }) => {
           linearGradientProps={{}}
           placement="center"
           statusBarProps={{}}
+          rightComponent={<Favorites />}
         />
         <SearchBar
           placeholder="Pesquise um país..."
