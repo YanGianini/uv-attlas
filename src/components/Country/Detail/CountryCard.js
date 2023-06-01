@@ -33,9 +33,9 @@ const CountryCard = ({country, countryIBGE}) => {
             <Text style={styles.fontBolder}>Área:</Text>
             <Text style={styles.fontInfo}>{country.area}</Text>
             <Text style={styles.fontBolder}>Idioma:</Text>
-            <Text style={styles.fontInfo}>{country.languages[0].nativeName}</Text>
+            <Text style={styles.fontInfo}>{country.languages?.[0]?.nativeName}</Text>
             <Text style={styles.fontBolder}>Moeda:</Text>
-            <Text style={styles.fontInfo}>{country.currencies[0].code}</Text>
+            <Text style={styles.fontInfo}>{country.currencies?.[0]?.code}</Text>
         </Card>
     )
 }

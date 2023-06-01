@@ -1,6 +1,6 @@
 import { memo, useState, useEffect } from "react";
 import { TouchableOpacity, View, FlatList } from "react-native"
-import { ListItem, Text, Avatar } from '@rneui/themed';
+import { ListItem, Avatar } from '@rneui/themed';
 import * as SecureStore from 'expo-secure-store';
 
 function itemEq(prevItem, nextItem) {
@@ -29,11 +29,23 @@ const Country = ({ item, navigation }) => {
 const MemoizedCountry = memo(Country, itemEq);
 
 export default CountryList = ({ route, navigation }) => {
+    const [favoriteCountries, setFavoriteCountries] = useState([])
     const { countryList } = route.params
+    
+    const getFavoriteCountries = async () => {
+        const favorites = await SecureStore.getItemAsync('favorites')
+        const parsedFavorites = JSON.parse(favorites);
+        const filteredFavoriteCountries = countryList.filter(country => parsedFavorites.includes(country.alpha3Code))
+        setFavoriteCountries(filteredFavoriteCountries)
+      }
 
+    useEffect(() => {
+        getFavoriteCountries();
+    }, []);
+    
     return (
         <FlatList
-            data={countryList}
+            data={favoriteCountries}
             renderItem={({ item }) => (
                     <MemoizedCountry item={item} navigation={navigation} />
                 )

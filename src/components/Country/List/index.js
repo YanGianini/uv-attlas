@@ -1,19 +1,17 @@
 import { memo, useState, useEffect } from "react";
 import { SafeAreaView, TouchableOpacity, View, FlatList } from "react-native"
 import { ThemeProvider, SearchBar, ListItem, Text, Avatar } from '@rneui/themed';
-import { Header } from '@rneui/themed';
+import { Header, Icon } from '@rneui/themed';
 import * as SecureStore from 'expo-secure-store';
 
 
 export default CountryList = ({ navigation }) => {
   const [countryList, setCountryList] = useState([]);
   const [countryListFiltered, setCountryListFiltered] = useState([]);
-  const [favoriteCountries, setFavoriteCountries] = useState([])
   const [search, setSearch] = useState("");
 
   useEffect(() => {
     fetchCountryList();
-    getFavoriteCountries();
   }, []);
 
   const updateSearch = (search) => {
@@ -41,11 +39,7 @@ export default CountryList = ({ navigation }) => {
     }
   };
 
-  const getFavoriteCountries = async () => {
-    const favorites = await SecureStore.getItemAsync('favorites')
-    const parsedFavorites = JSON.parse(favorites);
-    setFavoriteCountries(parsedFavorites)
-  }
+
 
   useEffect(() => {
     if (search) {
@@ -72,10 +66,12 @@ export default CountryList = ({ navigation }) => {
 
     useEffect(() => {
       checkFavoriteStatus();
-    }, [favoriteCountries]);
+    }, []);
 
     const checkFavoriteStatus = async () => {
       try {
+        const favorites = await SecureStore.getItemAsync('favorites')
+        const favoriteCountries = JSON.parse(favorites);
         if (favoriteCountries && favoriteCountries.includes(item.alpha3Code)) {
           setIsFavorite(true);
         } else {
@@ -89,7 +85,8 @@ export default CountryList = ({ navigation }) => {
     const toggleFavorite = async () => {
       try {
         let updatedFavorites = [];
-
+        const favorites = await SecureStore.getItemAsync('favorites')
+        const favoriteCountries = JSON.parse(favorites);
         if (favoriteCountries) {
           if (favoriteCountries.includes(item.alpha3Code)) {
             updatedFavorites = favoriteCountries.filter((alpha3Code) => alpha3Code !== item.alpha3Code);
@@ -104,7 +101,6 @@ export default CountryList = ({ navigation }) => {
         }
 
         await SecureStore.setItemAsync('favorites', JSON.stringify(updatedFavorites));
-        setFavoriteCountries(updatedFavorites)
       } catch (error) {
         console.log(error);
       }
@@ -121,10 +117,20 @@ export default CountryList = ({ navigation }) => {
             <ListItem.Content>
               <ListItem.Title>{item.translations.pt}</ListItem.Title>
               <ListItem.Subtitle>{item.nativeName}</ListItem.Subtitle>
-              <TouchableOpacity onPress={toggleFavorite}>
-                <Text>{isFavorite ? 'Remover dos Favoritos' : 'Adicionar aos Favoritos'}</Text>
-              </TouchableOpacity>
+              
             </ListItem.Content>
+            <TouchableOpacity onPress={toggleFavorite}>
+                <Text>{isFavorite ? (
+                  <Icon
+                    name='star'
+                    type='ionicon'
+                    color='#2089DC'
+                  />) : (<Icon
+                    name='star-outline'
+                    type='ionicon'
+                    color='#2089DC'
+                  />)}</Text>
+              </TouchableOpacity>
           </ListItem>
         </View>
       </TouchableOpacity>
@@ -134,10 +140,8 @@ export default CountryList = ({ navigation }) => {
   const MemoizedCountry = memo(Country, itemEq);
 
   const Favorites = () => {
-    const filteredFavoriteCountries = countryList.filter(country => favoriteCountries.includes(country.alpha3Code))
-
     return (
-      <TouchableOpacity onPress={() => navigation.navigate('Favoritos', {countryList: filteredFavoriteCountries })}>
+      <TouchableOpacity onPress={() => navigation.navigate('Favoritos', {countryList: countryList })}>
         <View>
           <Text style={{color: '#FFF'}}>Favoritos</Text>
         </View>      
